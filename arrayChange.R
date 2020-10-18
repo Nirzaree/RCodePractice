@@ -22,33 +22,38 @@
 # inputArray <- list(-1000, 0, -2, 0)
 # inputArray <- list(2, 1, 10, 1)
 
-#come back to this later.
+#this solution was still not fast enough for 1 test input. :\
 arrayChange <- function(inputArray) {
     inputArray <- unlist(inputArray)
     ArrayDiff <- diff(inputArray)
-
+    inputArrayModified <- inputArray
+    if (sum(ArrayDiff > 0) == length(ArrayDiff)) {
+      return(0)
+    } else {
+      #do it in 1 iteration
+      #first first dec diff
+      sumsteps = 0;
+      for (ind in seq(from = min(which(ArrayDiff <= 0)), to = length(ArrayDiff))) {
+        ArrayDiff <- diff(inputArray)
+        if (sum(ArrayDiff > 0) == length(ArrayDiff)) {
+          return(sumsteps)
+        }
+        if (ArrayDiff[ind] <= 0) {
+          stepsTomakeitPos <- (1 - (ArrayDiff[ind]))
+          sumsteps <- sumsteps + stepsTomakeitPos
+          inputArray[ind + 1] <- inputArray[ind + 1] + stepsTomakeitPos
+        }
+      }
+    }
+  return(sumsteps)
 }
 
+#someone else's solution: pretty elegant
 # arrayChange <- function(inputArray) {
 #   inputArray <- unlist(inputArray)
-#   ArrayDiff <- diff(inputArray)
-#   inputArrayModified <- inputArray
-#   totalStepsRequired <- 0
-#   if (sum(ArrayDiff <= 0) == 0) {
-#     return(0)
+#   initial <- inputArray
+#   for (ind in 2:length(inputArray)) {
+#     inputArray[ind] <- max(inputArray[ind-1] + 1,inputArray[ind])
 #   }
-#   #switching for for while to check for better speed
-#   initialEstimateOfLoopItn <- length(ArrayDiff) - min(which(ArrayDiff <= 0)) + 1;
-#  for (ind in seq(1:initialEstimateOfLoopItn)) {
-#    if (sum(ArrayDiff <= 0) > 0) {
-#      stepsTomakeitpos <- 1 - ArrayDiff[min(which(ArrayDiff <= 0))]
-#      #replace that and now do the same for remaining
-#      inputArrayModified[min(which(ArrayDiff <= 0)) + 1] <- inputArrayModified[min(which(ArrayDiff <= 0)) + 1] + stepsTomakeitpos
-#      ArrayDiff <- diff(inputArrayModified)
-#      # print(ArrayDiff)
-#      totalStepsRequired <- totalStepsRequired + stepsTomakeitpos 
-#    }
-#  } 
-# 
-#   return(totalStepsRequired)
+#   return(sum(inputArray - initial))
 # }
