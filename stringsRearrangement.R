@@ -27,31 +27,36 @@
 # 
 # It's possible to arrange these strings in a way that each consecutive pair of strings differ by 1 character (eg: "aa", "ab", "bb" or "bb", "ab", "aa"), so return true.
 # 
-inputArray = list("aba", 
-              "bbb", 
-              "bab")
 
-inputArray = list("ab", "bb", "aa")
+# inputArray = list("aba", 
+#               "bbb", 
+#               "bab")
+# 
+# inputArray = list("ab", "bb", "aa")
+# 
+# inputArray = list("abc",
+#                   "bef",
+#                   "bcc",
+#                   "bec",
+#                   "bbc",
+#                   "bdc")
 
-inputArray = list("abc",
-                  "bef",
-                  "bcc",
-                  "bec",
-                  "bbc",
-                  "bdc")
+# inputArray = list(
+#   "ff", 
+#    "gf", 
+#    "af", 
+#    "ar", 
+#    "hf"
+# )
 
-inputArray = list(
-  "ff", 
-   "gf", 
-   "af", 
-   "ar", 
-   "hf"
-)
+#todo: write own permutation logic: 
 
+#big mistake I was making till now, was not storing the permutation indices but computing
+#them each time and extracting the specific row. :( Spent hours/days.. over this
 stringsRearrangement <- function(inputArray) {
    inputArray <- unlist(inputArray)
    # https://stackoverflow.com/questions/11095992/generating-all-distinct-permutations-of-a-list-in-r
-   
+
    permutations <- function(n){
       if(n==1){
          return(matrix(1))
@@ -65,26 +70,63 @@ stringsRearrangement <- function(inputArray) {
          return(A)
       }
    }
-   
+   permutationindices <- permutations(length(inputArray))
    for (ind in 1:factorial(length(inputArray))) {
-      permutationindices <- permutations(length(inputArray))[ind,]
       #get the values in that order
-      combinationitn <- inputArray[permutationindices]
-         
-      combinationitn <- lapply(combinationitn,utf8ToInt)
-      diffarray <- lapply(seq(1:(length(combinationitn) - 1)), function(x) {
-          return((combinationitn[[x]] - combinationitn[[x+1]]))
-      })
-      
-     nonzeroelements <- lapply(diffarray,function(x) {
-       return(sum(x != 0))
-     })
-    if (all(abs(unlist(nonzeroelements)) == 1)) {
-      return(TRUE)
-    }
+      combinationitn <- inputArray[permutationindices[ind,]]
+      diffarray = 0;
+      for (ind2 in 1:(length(combinationitn)-1)) {
+         if (sum(strsplit(combinationitn[ind2],"")[[1]] != strsplit(combinationitn[ind2 + 1],"")[[1]]) == 1) {
+            diffarray = diffarray + 1
+         } else {
+            break
+         }
+      }
+      if (diffarray == (length(inputArray) - 1)) {
+         return(TRUE)
+      }
    }
    return(FALSE)
 }
+
+#still not fast enough: die die
+# stringsRearrangement <- function(inputArray) {
+#    inputArray <- unlist(inputArray)
+#    # https://stackoverflow.com/questions/11095992/generating-all-distinct-permutations-of-a-list-in-r
+#    
+#    permutations <- function(n){
+#       if(n==1){
+#          return(matrix(1))
+#       } else {
+#          sp <- permutations(n-1)
+#          p <- nrow(sp)
+#          A <- matrix(nrow=n*p,ncol=n)
+#          for(i in 1:n){
+#             A[(i-1)*p+1:p,] <- cbind(i,sp+(sp>=i))
+#          }
+#          return(A)
+#       }
+#    }
+#    
+#    for (ind in 1:factorial(length(inputArray))) {
+#       permutationindices <- permutations(length(inputArray))[ind,]
+#       #get the values in that order
+#       combinationitn <- inputArray[permutationindices]
+#          
+#       combinationitn <- lapply(combinationitn,utf8ToInt)
+#       diffarray <- lapply(seq(1:(length(combinationitn) - 1)), function(x) {
+#           return((combinationitn[[x]] - combinationitn[[x+1]]))
+#       })
+#       
+#      nonzeroelements <- lapply(diffarray,function(x) {
+#        return(sum(x != 0))
+#      })
+#     if (all(abs(unlist(nonzeroelements)) == 1)) {
+#       return(TRUE)
+#     }
+#    }
+#    return(FALSE)
+# }
 
 #combinat library is not there on codesignal. 
 # library(combinat)
